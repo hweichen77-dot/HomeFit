@@ -41,8 +41,12 @@ function normalizeSJ(feature: HousingFeature): DisplayProperty | null {
   const vli = num(p.VLIUNITS);
   const li  = num(p.LIUNITS);
   const mod = num(p.MODERATEUNITS);
+  // incomeCeilingPct is the highest income (as % of AMI) at which a household
+  // can still qualify for some unit here, so use the most permissive tier that
+  // has units. Picking the lowest tier hid mixed-income developments from the
+  // moderate- and low-income households who qualify for their higher tiers.
   const sjIncomeCeilingPct: number | undefined =
-    eli > 0 ? 30 : vli > 0 ? 50 : li > 0 ? 80 : mod > 0 ? 120 : undefined;
+    mod > 0 ? 120 : li > 0 ? 80 : vli > 0 ? 50 : eli > 0 ? 30 : undefined;
 
   return {
     id: `sj-${objectId || stableSlug(str(p.DEVELOPMENTNAME), str(p.ADDRESS))}`,
