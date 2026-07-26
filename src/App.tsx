@@ -11,6 +11,7 @@ import type { HousingCollection, GeoLocation, DisplayProperty } from "./types/ho
 import { normalizeFeatures, dedupeProperties, qualifiesForIncome, hasBedroomType, popMatches } from "./lib/normalize";
 import { haversineKm } from "./lib/geo";
 import { getAmi, maxRentFromAmi } from "./lib/ami";
+import { tierQualifiesForCeiling } from "./lib/surveyLogic";
 import { AboutModal } from "./components/AboutModal";
 
 const FullMap = lazy(() => import("./components/Map").then(m => ({ default: m.Map })));
@@ -557,8 +558,8 @@ export default function App() {
     }
 
     if (filters.incomeTier) {
-      const tierPct = { ELI: 30, VLI: 50, LI: 80, Moderate: 120 }[filters.incomeTier];
-      items = items.filter(p => p.incomeCeilingPct == null || tierPct <= p.incomeCeilingPct);
+      const tier = filters.incomeTier;
+      items = items.filter(p => p.incomeCeilingPct == null || tierQualifiesForCeiling(tier, p.incomeCeilingPct));
     }
 
     if (filters.bedroomSize) {

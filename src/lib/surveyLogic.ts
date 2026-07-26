@@ -76,3 +76,27 @@ export function tierToFilterValue(tier: AmiTier): "" | "ELI" | "VLI" | "LI" | "M
   if (tier === "AboveAMI") return "";
   return tier;
 }
+
+// Lowest AMI percentage a household in each tier can have. A tier spans a band
+// of incomes (e.g. Low Income is 51-80% AMI), so the minimum is the bottom of
+// that band.
+const TIER_MIN_AMI_PCT: Record<"ELI" | "VLI" | "LI" | "Moderate", number> = {
+  ELI: 0,
+  VLI: 31,
+  LI: 51,
+  Moderate: 81,
+};
+
+// Whether a household in the given income tier could be income-eligible for a
+// property whose income limit is capped at ceilingPct of AMI. Eligibility
+// depends on the household's actual income, but from the tier alone we keep a
+// property whenever anyone in that tier could qualify, i.e. when the ceiling is
+// at least the tier's lowest income. Using the tier's low bound (rather than
+// its high bound) avoids hiding, for example, 60% AMI units from a Low Income
+// household whose income sits in the 51-60% range.
+export function tierQualifiesForCeiling(
+  tier: "ELI" | "VLI" | "LI" | "Moderate",
+  ceilingPct: number,
+): boolean {
+  return ceilingPct >= TIER_MIN_AMI_PCT[tier];
+}
