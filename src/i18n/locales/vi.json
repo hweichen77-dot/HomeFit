@@ -144,6 +144,7 @@
   },
   "results": {
     "saved": "Đã lưu ({{count}})",
-    "tracking": "Đang theo dõi ({{count}})"
+    "tracking": "Đang theo dõi ({{count}})",
+    "showing": "Đang hiển thị {{shown}} trong {{total}} nhà ở"
   }
 }

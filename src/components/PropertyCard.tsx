@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { useTranslation } from "react-i18next";
 import type { DisplayProperty } from "../types/housing";
@@ -139,7 +140,7 @@ const STATUS_COLORS: Record<AppStatusValue, string> = {
   waitlisted: "var(--status-waitlisted)",
 };
 
-export function PropertyCard({ property: p, userLocation, saved, appStatus, onSelect, onSave, onStatusChange, comparing, onToggleCompare }: PropertyCardProps) {
+function PropertyCardBase({ property: p, userLocation, saved, appStatus, onSelect, onSave, onStatusChange, comparing, onToggleCompare }: PropertyCardProps) {
   const { t } = useTranslation();
   const tier = getAffordabilityTier(p);
   const dist = userLocation && p.lat != null && p.lng != null
@@ -278,3 +279,5 @@ export function PropertyCard({ property: p, userLocation, saved, appStatus, onSe
     </article>
   );
 }
+
+export const PropertyCard = memo(PropertyCardBase);

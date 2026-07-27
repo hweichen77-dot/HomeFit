@@ -144,6 +144,7 @@
   },
   "results": {
     "saved": "Saved ({{count}})",
-    "tracking": "Tracking ({{count}})"
+    "tracking": "Tracking ({{count}})",
+    "showing": "Showing {{shown}} of {{total}} homes"
   }
 }

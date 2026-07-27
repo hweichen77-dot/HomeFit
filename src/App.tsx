@@ -11,6 +11,7 @@ import type { HousingCollection, GeoLocation, DisplayProperty } from "./types/ho
 import { normalizeFeatures, dedupeProperties, qualifiesForIncome, hasBedroomType, popMatches } from "./lib/normalize";
 import { haversineKm } from "./lib/geo";
 import { getAmi, maxRentFromAmi } from "./lib/ami";
+import { useDebounced, useIncrementalCount } from "./lib/useDeferredFilter";
 import { AboutModal } from "./components/AboutModal";
 
 const FullMap = lazy(() => import("./components/Map").then(m => ({ default: m.Map })));
@@ -178,6 +179,8 @@ function EmptyState({ onReset }: { onReset: () => void }) {
     </div>
   );
 }
+
+const EMPTY_SET: ReadonlySet<string> = new Set();
 
 export default function App() {
   const { t } = useTranslation();
@@ -528,6 +531,10 @@ export default function App() {
     try { localStorage.setItem("housing-survey-v1", "skipped"); } catch {  }
   }, []);
 
+  const savedFilterKey = filters.savedOnly ? favorites : EMPTY_SET;
+  const incomeForFilter = useDebounced(incomeValue, 180);
+  const amiCeilingForFilter = useDebounced(amiCeiling, 180);
+
   const ami = useMemo(() => {
     if (!searchLocation) return 97800;
     const city = searchLocation.display_name.split(",")[0];
@@ -546,13 +553,13 @@ export default function App() {
       items = items.filter(p => !p.isLikelyExpired);
     }
 
-    if (incomeValue > 0) {
-      items = items.filter(p => qualifiesForIncome(p, incomeValue, hhSize, ami));
+    if (incomeForFilter > 0) {
+      items = items.filter(p => qualifiesForIncome(p, incomeForFilter, hhSize, ami));
     }
 
-    if (amiCeiling > 0) {
+    if (amiCeilingForFilter > 0) {
       items = items.filter(p =>
-        p.incomeCeilingPct == null || p.incomeCeilingPct <= amiCeiling
+        p.incomeCeilingPct == null || p.incomeCeilingPct <= amiCeilingForFilter
       );
     }
 
@@ -602,9 +609,9 @@ export default function App() {
         case "rent":
           return estRent(a) - estRent(b);
         case "match": {
-          if (incomeValue > 0) {
-            const aQ = qualifiesForIncome(a, incomeValue, hhSize, ami);
-            const bQ = qualifiesForIncome(b, incomeValue, hhSize, ami);
+          if (incomeForFilter > 0) {
+            const aQ = qualifiesForIncome(a, incomeForFilter, hhSize, ami);
+            const bQ = qualifiesForIncome(b, incomeForFilter, hhSize, ami);
             if (aQ !== bQ) return aQ ? -1 : 1;
           }
           return dist(a) - dist(b);
@@ -613,7 +620,11 @@ export default function App() {
           return a.name.localeCompare(b.name);
       }
     });
-  }, [rawData, filters, dataSource, incomeValue, hhSize, ami, amiCeiling, userLocation, showExpired, favorites]);
+  }, [rawData, filters, dataSource, incomeForFilter, hhSize, ami, amiCeilingForFilter, userLocation, showExpired, savedFilterKey]);
+
+  const listResetKey = `${filtered.length}|${filters.sortBy}|${searchQuery}`;
+  const { count: visibleCount, sentinelRef } = useIncrementalCount(filtered.length, 48, listResetKey);
+  const visible = useMemo(() => filtered.slice(0, visibleCount), [filtered, visibleCount]);
 
   const mapData = useMemo<HousingCollection>(() => ({
     type: "FeatureCollection",
@@ -787,7 +798,7 @@ export default function App() {
 
             {hasSearched && !loading && filtered.length > 0 && (
               <div className="prop-grid">
-                {filtered.map(p => (
+                {visible.map(p => (
                   <PropertyCard
                     key={p.id}
                     property={p}
@@ -801,6 +812,16 @@ export default function App() {
                     onToggleCompare={toggleCompare}
                   />
                 ))}
+              </div>
+            )}
+
+            {hasSearched && !loading && visibleCount < filtered.length && (
+              <div ref={sentinelRef} className="results-more" aria-live="polite">
+                {t("results.showing", {
+                  shown: visibleCount,
+                  total: filtered.length,
+                  defaultValue: "Showing {{shown}} of {{total}}",
+                })}
               </div>
             )}
           </div>

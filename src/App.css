@@ -4475,3 +4475,10 @@ html, body, #root { height: 100%; overflow: hidden; }
   transition: background 0.12s, border-color 0.12s, color 0.12s;
 }
 .topbar-theme-btn:hover { color: var(--accent); border-color: var(--accent-dim); background: var(--bg-hover); }
+
+.results-more {
+  padding: 18px 20px 28px;
+  text-align: center;
+  font-size: 0.86rem;
+  color: var(--text-muted, #4a4a4a);
+}
