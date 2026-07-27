@@ -15,4 +15,17 @@ i18n.use(initReactI18next).init({
   interpolation: { escapeValue: false },
 });
 
+// Keep the document language in sync with the active UI language so screen
+// readers announce Spanish and Vietnamese content with the right pronunciation.
+// The html tag ships as lang="en"; without this a returning es/vi user or a
+// runtime language switch would leave the whole translated UI marked English.
+function syncDocumentLang(lng: string): void {
+  if (typeof document !== 'undefined' && lng) {
+    document.documentElement.lang = lng.slice(0, 2);
+  }
+}
+
+syncDocumentLang(i18n.language);
+i18n.on('languageChanged', syncDocumentLang);
+
 export default i18n;
