@@ -665,6 +665,9 @@ export default function App() {
       {showAbout && <AboutModal onClose={() => setShowAbout(false)} />}
 
       <div className="new-app-layout">
+        <a href="#main-content" className="skip-link">
+          {t("a11y.skipToResults", { defaultValue: "Skip to results" })}
+        </a>
         <TopBar
           searchDisplay={searchLocation?.display_name}
           hasSearched={hasSearched}
@@ -711,7 +714,7 @@ export default function App() {
         {}
         <div className={`content-area${selectedProperty ? " has-detail" : ""}`}>
           {}
-          <div className="card-grid-area">
+          <main id="main-content" className="card-grid-area" tabIndex={-1}>
             {!hasSearched && (
               <WelcomeScreen
                 onSearch={handleSearch}
@@ -824,7 +827,7 @@ export default function App() {
                 })}
               </div>
             )}
-          </div>
+          </main>
 
           {}
           {selectedProperty && (

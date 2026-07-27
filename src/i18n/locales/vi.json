@@ -146,5 +146,8 @@
     "saved": "Đã lưu ({{count}})",
     "tracking": "Đang theo dõi ({{count}})",
     "showing": "Đang hiển thị {{shown}} trong {{total}} nhà ở"
+  },
+  "a11y": {
+    "skipToResults": "Chuyển đến kết quả"
   }
 }

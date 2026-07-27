@@ -4482,3 +4482,5 @@ html, body, #root { height: 100%; overflow: hidden; }
   font-size: 0.86rem;
   color: var(--text-muted, #4a4a4a);
 }
+
+.card-grid-area:focus { outline: none; }

@@ -146,5 +146,8 @@
     "saved": "Guardados ({{count}})",
     "tracking": "Siguiendo ({{count}})",
     "showing": "Mostrando {{shown}} de {{total}} viviendas"
+  },
+  "a11y": {
+    "skipToResults": "Saltar a los resultados"
   }
 }
