@@ -1,4 +1,4 @@
-# Affordable Housing Locator
+# HomeFit
 
 > A free, open-source desktop app that helps anyone in the United States find affordable housing by city, ZIP code, or current location.
 
@@ -79,7 +79,7 @@ These rents are HUD-regulated maximums by federal law for LIHTC properties.
 ## Download
 
 Prebuilt installers (no toolchain required) are on the
-[**Releases page**](https://github.com/hweichen77-dot/affordable-housing-locator/releases/latest). Grab the `.dmg` (macOS) or `.msi` / `.exe` (Windows).
+[**Releases page**](https://github.com/hweichen77-dot/homefit/releases/latest). Grab the `.dmg` (macOS) or `.msi` / `.exe` (Windows).
 
 ---
 

@@ -3,6 +3,6 @@
 <plist version="1.0">
 <dict>
   <key>NSLocationWhenInUseUsageDescription</key>
-  <string>Affordable Housing Locator uses your location to find nearby affordable housing properties.</string>
+  <string>HomeFit uses your location to find nearby affordable housing properties.</string>
 </dict>
 </plist>

@@ -461,7 +461,7 @@ export default function App() {
       ].filter(Boolean);
       return parts.join("\n");
     });
-    const header = `Affordable Housing Locator — Saved Properties (${saved.length})\n${"=".repeat(48)}\n\n`;
+    const header = `HomeFit — Saved Properties (${saved.length})\n${"=".repeat(48)}\n\n`;
     const blob = new Blob([header + lines.join("\n\n" + "-".repeat(32) + "\n\n")], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
