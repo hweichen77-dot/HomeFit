@@ -853,6 +853,9 @@ export default function App() {
           <ComparePanel
             properties={rawData.filter(p => compareIds.has(p.id))}
             userLocation={userLocation}
+            searchLocation={searchLocation}
+            ami={ami}
+            hhSize={hhSize}
             appStatuses={appStatuses}
             deadlines={deadlines}
             onClear={clearCompare}
