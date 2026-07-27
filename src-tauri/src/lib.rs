@@ -5,7 +5,7 @@ use commands::housing::{fetch_housing, fetch_lihtc, fetch_public_housing, fetch_
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let client = reqwest::Client::builder()
-        .user_agent("HomeFit/1.14.0 (+https://github.com/hweichen77-dot/homefit)")
+        .user_agent("HomeFit/1.15.0 (+https://github.com/hweichen77-dot/homefit)")
         .timeout(std::time::Duration::from_secs(20))
         .build()
         .expect("failed to build HTTP client");
