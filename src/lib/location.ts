@@ -100,9 +100,13 @@ export function parseLocationForAmi(query: string): ParsedLocation {
 
   let state: string | undefined;
   const tokens = lower.replace(/,/g, " ").split(/\s+/).filter(Boolean);
+  // In "City, ST" the state abbreviation comes last, so keep the last matching
+  // token rather than the first. Otherwise a city-name word that happens to be
+  // a state code (the "La" in "La Mesa, CA", "La Crosse, WI") is misread as the
+  // state, producing the wrong AMI and eligibility tier.
   for (const tok of tokens) {
     const up = tok.toUpperCase();
-    if (STATE_ABBRS.has(up)) { state = up; break; }
+    if (STATE_ABBRS.has(up)) state = up;
   }
 
   if (!state) {
