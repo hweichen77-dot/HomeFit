@@ -1,9 +1,11 @@
 import { lazy, Suspense, useState } from "react";
+import { useDismissable } from "../lib/useDismissable";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import type { DisplayProperty, HousingCollection } from "../types/housing";
 import type { UserLocation, AppStatusValue } from "../App";
-import { getAffordabilityTier } from "./PropertyCard";
+import { getAffordabilityTier, tierStroke } from "./PropertyCard";
 import { haversineKm, fmtDist } from "../lib/geo";
 import { rentRangeForTier, fmt, adjustedAmi } from "../lib/ami";
 
@@ -142,8 +144,12 @@ export function DetailPanel({
     : p.yearBuilt ? p.yearBuilt + 30 : null;
   const yearsLeft = expiryYear ? expiryYear - new Date().getFullYear() : null;
 
+  const panelRef = useDismissable<HTMLElement>(onClose, { active: true });
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  useEffect(() => { headingRef.current?.focus(); }, [p.id]);
+
   return (
-    <aside className="detail-panel" aria-label={`Details for ${p.name}`}>
+    <aside className="detail-panel" ref={panelRef} aria-label={`Details for ${p.name}`}>
       <div className="detail-header">
         <button className="detail-close-btn" onClick={onClose} aria-label={t("ui.closeDetails")} type="button">×</button>
         <div className="detail-header-actions">
@@ -193,18 +199,19 @@ export function DetailPanel({
       <div className="detail-body">
         {}
         <div>
-          <h2 className="detail-prop-name">{p.name}</h2>
+          <h2 className="detail-prop-name" ref={headingRef} tabIndex={-1}>{p.name}</h2>
           <p className="detail-address">{p.address}, {p.city}, {p.state} {p.zip}</p>
           {dist && <p className="detail-dist">{dist} from your location</p>}
         </div>
 
         {}
-        <div className={`detail-tier-card ${tier.colorClass}`}>
-          <div className="detail-tier-label">{tier.label}</div>
-          <div className="detail-afford-bar-wrap" aria-label={`Affordability level: ${tier.barPct}%`}>
-            <div className={`detail-afford-bar-fill ${tier.colorClass}`} style={{ width: `${tier.barPct}%` }} />
-          </div>
-          <p className="detail-tier-sub">{tier.sublabel}</p>
+        <div className="detail-tier-card" style={{ borderInlineStartColor: tierStroke(tier.key) }}>
+          <div className="detail-tier-label" style={{ color: tierStroke(tier.key) }}>{tier.label}</div>
+          <p className="detail-tier-sub">
+            {tier.ceilingPct != null
+              ? `Serves households at or below ${tier.ceilingPct}% of area median income`
+              : "This property has income limits, but the exact ceiling is not reported"}
+          </p>
           {ceilPct !== undefined && (
             <p className="detail-tier-ami">
               {amiTierName(ceilPct)} — household income must stay under{" "}

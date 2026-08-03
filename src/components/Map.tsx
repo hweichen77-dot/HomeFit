@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { HousingCollection } from "../types/housing";
 import type { UserLocation } from "../App";
 
-const TILE_STYLE = "https://tiles.openfreemap.org/styles/liberty";
+const TILE_STYLE = "https://tiles.openfreemap.org/styles/dark";
 const SJ_CENTER: [number, number] = [-121.8863, 37.3382];
 
 interface MapFly {
@@ -187,11 +187,11 @@ function addMapLayers(map: maplibregl.Map, onSelectRef: React.MutableRefObject<(
       "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 5, 14, 9],
       "circle-color": [
         "case",
-        ["==", ["get", "ARSTATUS"], "Active"], "#16a34a",
-        "#9a5b1e",
+        ["==", ["get", "ARSTATUS"], "Active"], "#5CE1A6",
+        "#FFD166",
       ],
       "circle-stroke-width": 2,
-      "circle-stroke-color": "#fff",
+      "circle-stroke-color": "#05070B",
       "circle-opacity": ["interpolate", ["linear"], ["zoom"], 10, 0, 12, 0.9],
     },
   });
@@ -203,9 +203,9 @@ function addMapLayers(map: maplibregl.Map, onSelectRef: React.MutableRefObject<(
     filter: ["==", ["get", "_displayId"], ""],
     paint: {
       "circle-radius": 13,
-      "circle-color": "#c07a1e",
+      "circle-color": "#FFA94D",
       "circle-stroke-width": 3,
-      "circle-stroke-color": "#fff",
+      "circle-stroke-color": "#05070B",
       "circle-opacity": 1,
     },
   });

@@ -1,7 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import "./App.css";
+import "./theme.css";
+import "./styles/shell.css";
+import "./styles/hero.css";
+import "./styles/cards.css";
+import "./styles/panels.css";
 import "./i18n/config";
 
 class ErrorBoundary extends React.Component<
@@ -21,20 +25,20 @@ class ErrorBoundary extends React.Component<
         <div style={{
           display: "flex", flexDirection: "column", alignItems: "center",
           justifyContent: "center", height: "100vh", gap: "12px",
-          background: "oklch(14% 0.01 240)", color: "oklch(93% 0.008 240)",
+          background: "#05070B", color: "#F4F7FB",
           fontFamily: "system-ui, sans-serif", padding: "24px", textAlign: "center",
         }}>
           <div style={{ fontSize: "32px" }}>⚠</div>
           <div style={{ fontSize: "16px", fontWeight: 700 }}>Something went wrong</div>
-          <div style={{ fontSize: "12px", color: "oklch(45% 0.015 240)", maxWidth: "480px", lineHeight: 1.6 }}>
+          <div style={{ fontSize: "13px", color: "rgba(244,247,251,0.8)", maxWidth: "480px", lineHeight: 1.6 }}>
             {this.state.error.message}
           </div>
           <button
             onClick={() => window.location.reload()}
             style={{
               marginTop: "8px", padding: "8px 20px", borderRadius: "8px",
-              border: "1px solid oklch(40% 0.12 145)", background: "oklch(22% 0.06 145)",
-              color: "oklch(60% 0.18 145)", fontSize: "13px", fontWeight: 600,
+              border: "none", background: "#FFA94D",
+              color: "#07090E", fontSize: "13px", fontWeight: 700,
               cursor: "pointer", fontFamily: "inherit",
             }}
           >Reload app</button>
@@ -45,13 +49,7 @@ class ErrorBoundary extends React.Component<
   }
 }
 
-// Apply saved theme before first paint (avoids flash). Default: light (civic).
-(() => {
-  try {
-    const t = localStorage.getItem("theme") || "light";
-    document.documentElement.dataset.theme = t;
-  } catch { /* ignore */ }
-})();
+document.documentElement.dataset.theme = "dark";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useDismissable } from "../lib/useDismissable";
 import type { SurveyAnswers, PopType, BedroomPref } from "../lib/surveyLogic";
 import { computeSurveyResult, tierToFilterValue } from "../lib/surveyLogic";
 import { parseLocationForAmi } from "../lib/location";
@@ -144,17 +145,28 @@ export function AmiSurvey({ onComplete, onSkip }: AmiSurveyProps) {
 
   const canNext1 = annualIncome > 0;
 
+  const modalRef = useDismissable<HTMLDivElement>(onSkip, { active: true, trapFocus: true });
+  const stepHeadingRef = useRef<HTMLHeadingElement>(null);
+  useEffect(() => { stepHeadingRef.current?.focus(); }, [step]);
+
   return (
     <div className="survey-overlay" role="dialog" aria-modal="true" aria-labelledby="survey-title">
-      <div className="survey-modal">
+      <div className="survey-modal" ref={modalRef}>
         {}
         <div className="survey-header">
-          <div className="survey-step-dots">
+          <div
+            className="survey-step-dots"
+            role="progressbar"
+            aria-valuenow={step}
+            aria-valuemin={1}
+            aria-valuemax={4}
+            aria-label={`Step ${step} of 4`}
+          >
             {([1, 2, 3, 4] as Step[]).map(s => (
               <span key={s} className={`survey-dot${step === s ? " active" : step > s ? " done" : ""}`} />
             ))}
           </div>
-          <button className="survey-skip-btn" onClick={onSkip} aria-label="Skip survey">
+          <button className="survey-skip-btn" type="button" onClick={onSkip} aria-label="Skip survey">
             Skip
           </button>
         </div>
@@ -162,7 +174,7 @@ export function AmiSurvey({ onComplete, onSkip }: AmiSurveyProps) {
         {}
         {step === 1 && (
           <div className="survey-step">
-            <h2 id="survey-title" className="survey-title">Tell us about your household</h2>
+            <h2 id="survey-title" className="survey-title" ref={stepHeadingRef} tabIndex={-1}>Tell us about your household</h2>
             <p className="survey-sub">Enter your income and household size to see which programs and properties you qualify for.</p>
 
             {}
@@ -284,7 +296,7 @@ export function AmiSurvey({ onComplete, onSkip }: AmiSurveyProps) {
         {}
         {step === 2 && (
           <div className="survey-step">
-            <h2 id="survey-title" className="survey-title">Your housing needs</h2>
+            <h2 id="survey-title" className="survey-title" ref={stepHeadingRef} tabIndex={-1}>Your housing needs</h2>
             <p className="survey-sub">Filter results by your specific housing needs.</p>
 
             <div className="survey-field">
@@ -329,7 +341,7 @@ export function AmiSurvey({ onComplete, onSkip }: AmiSurveyProps) {
         {}
         {step === 3 && (
           <div className="survey-step">
-            <h2 id="survey-title" className="survey-title">Where are you looking?</h2>
+            <h2 id="survey-title" className="survey-title" ref={stepHeadingRef} tabIndex={-1}>Where are you looking?</h2>
             <p className="survey-sub">Enter a city or ZIP code, or skip to search from the main screen.</p>
 
             <div className="survey-field">
@@ -358,7 +370,7 @@ export function AmiSurvey({ onComplete, onSkip }: AmiSurveyProps) {
         {}
         {step === 4 && (
           <div className="survey-step survey-results">
-            <h2 id="survey-title" className="survey-title">Your housing profile</h2>
+            <h2 id="survey-title" className="survey-title" ref={stepHeadingRef} tabIndex={-1}>Your housing profile</h2>
 
             {result ? (
               <>
