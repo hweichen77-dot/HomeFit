@@ -1,6 +1,6 @@
 [package]
 name = "homefit"
-version = "1.16.0"
+version = "1.16.1"
 description = "HomeFit — nationwide HUD/LIHTC search with income-based eligibility matching"
 edition = "2021"
 

@@ -178,3 +178,11 @@ a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset:
     scroll-behavior: auto !important;
   }
 }
+
+/* Headings that receive focus programmatically when a dialog or panel opens.
+   Screen readers still announce them; a visible ring here reads as a rendering bug
+   because the user never navigated to the element. */
+:where(h1, h2, h3, h4)[tabindex="-1"]:focus,
+:where(h1, h2, h3, h4)[tabindex="-1"]:focus-visible {
+  outline: none;
+}
