@@ -13,6 +13,9 @@ import { haversineKm } from "./lib/geo";
 import { getAmi, maxRentFromAmi } from "./lib/ami";
 import { useDebounced, useIncrementalCount } from "./lib/useDeferredFilter";
 import { AboutModal } from "./components/AboutModal";
+import { Hero } from "./components/Hero";
+import { ClickSpark, AnimatedContent, GradualBlur } from "./reactbits";
+import { useReducedMotion } from "./lib/motion";
 
 const FullMap = lazy(() => import("./components/Map").then(m => ({ default: m.Map })));
 
@@ -46,132 +49,43 @@ export const DEFAULT_FILTERS: FilterState = {
   householdSize: 1,
 };
 
-function useCountUp(target: number, ms = 1100): number {
-  const [val, setVal] = useState(0);
-  useEffect(() => {
-    const reduce = typeof window !== "undefined"
-      && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) { setVal(target); return; }
-    let raf = 0;
-    let start = 0;
-    const tick = (now: number) => {
-      if (!start) start = now;
-      const p = Math.min(1, (now - start) / ms);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setVal(Math.round(target * eased));
-      if (p < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [target, ms]);
-  return val;
-}
+interface ActiveFilter { key: string; label: string; clear: () => void; }
 
-function CountStat({ to, prefix = "", suffix = "", comma = false }: {
-  to: number; prefix?: string; suffix?: string; comma?: boolean;
+function EmptyState({ onReset, active, totalBeforeFilters }: {
+  onReset: () => void;
+  active: ActiveFilter[];
+  totalBeforeFilters: number;
 }) {
-  const n = useCountUp(to);
-  return <>{prefix}{comma ? n.toLocaleString("en-US") : n}{suffix}</>;
-}
-
-function WelcomeScreen({ onSearch, onNearMe, loading, error, searchHistory }: {
-  onSearch: (q: string) => void;
-  onNearMe: () => void;
-  loading: boolean;
-  error: string | null;
-  searchHistory: string[];
-}) {
-  const { t } = useTranslation();
-  const cities = ["San Jose, CA", "Austin, TX", "Chicago, IL", "Seattle, WA", "Miami, FL", "Denver, CO"];
-  const screenRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const el = screenRef.current;
-    if (!el) return;
-    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
-    let raf = 0;
-    const onMove = (e: PointerEvent) => {
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        raf = 0;
-        const r = el.getBoundingClientRect();
-        el.style.setProperty("--wx", `${((e.clientX - r.left) / r.width) * 100}%`);
-        el.style.setProperty("--wy", `${((e.clientY - r.top) / r.height) * 100}%`);
-      });
-    };
-    el.addEventListener("pointermove", onMove);
-    return () => { el.removeEventListener("pointermove", onMove); if (raf) cancelAnimationFrame(raf); };
-  }, []);
-  return (
-    <div className="welcome-screen" ref={screenRef}>
-      <div className="welcome-content">
-        <h1 className="welcome-heading">{t("welcome.heading")}</h1>
-        <p className="welcome-sub">{t("welcome.sub")}</p>
-
-        {error && <p className="welcome-error" role="alert">{error}</p>}
-
-        <div className="welcome-actions">
-          <button
-            className="welcome-nearme-btn"
-            onClick={onNearMe}
-            disabled={loading}
-            type="button"
-          >
-            {loading ? t("welcome.findingNearMe") : t("welcome.findNearMe")}
-          </button>
-          <span className="welcome-actions-hint">{t("welcome.searchHint")}</span>
-        </div>
-
-        {searchHistory.length > 0 && (
-          <div className="welcome-quickstart">
-            <span className="welcome-quickstart-label">{t("welcome.recentSearches")}</span>
-            <div className="welcome-chips">
-              {searchHistory.map(q => (
-                <button key={q} className="welcome-chip welcome-chip-recent" onClick={() => onSearch(q)} type="button">
-                  {q}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="welcome-quickstart">
-          <span className="welcome-quickstart-label">{t("welcome.searchCity")}</span>
-          <div className="welcome-chips">
-            {cities.map(city => (
-              <button key={city} className="welcome-chip" onClick={() => onSearch(city)} type="button">
-                {city}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <dl className="welcome-stats">
-          <div className="welcome-stat">
-            <dt className="welcome-stat-num"><CountStat to={50000} suffix="+" comma /></dt>
-            <dd className="welcome-stat-label">{t("welcome.statHomes")}</dd>
-          </div>
-          <div className="welcome-stat">
-            <dt className="welcome-stat-num"><CountStat to={50} /></dt>
-            <dd className="welcome-stat-label">{t("welcome.statStates")}</dd>
-          </div>
-          <div className="welcome-stat">
-            <dt className="welcome-stat-num">$0</dt>
-            <dd className="welcome-stat-label">{t("welcome.statFree")}</dd>
-          </div>
-        </dl>
-      </div>
-    </div>
-  );
-}
-
-function EmptyState({ onReset }: { onReset: () => void }) {
   const { t } = useTranslation();
   return (
     <div className="empty-screen">
       <div className="empty-inner">
-        <span className="empty-mark" aria-hidden="true">—</span>
         <h2 className="empty-heading">{t("empty.heading")}</h2>
-        <p className="empty-sub">{t("empty.sub")}</p>
+        {active.length > 0 ? (
+          <>
+            <p className="empty-sub">
+              {t("empty.filteredOut", {
+                total: totalBeforeFilters,
+                count: active.length,
+                defaultValue: "{{total}} homes were found here, then removed by {{count}} filter(s). Turn one off:",
+              })}
+            </p>
+            <ul className="empty-filters">
+              {active.map(f => (
+                <li key={f.key}>
+                  <button className="empty-filter-chip" onClick={f.clear} type="button">
+                    {f.label}
+                    <span aria-hidden="true">×</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </>
+        ) : (
+          <p className="empty-sub">{t("empty.noneInArea", {
+            defaultValue: "No income-limited homes are recorded within 25 km of this location. Try a nearby city.",
+          })}</p>
+        )}
         <button className="empty-reset-btn" onClick={onReset} type="button">
           {t("empty.clearFilters")}
         </button>
@@ -654,20 +568,66 @@ export default function App() {
     if (found) setSelectedProperty(found);
   }, [filtered, rawData]);
 
+
   const loading = dataLoading || searchLoading;
+  const reduced = useReducedMotion();
+
+  const activeFilters = useMemo<ActiveFilter[]>(() => {
+    const out: ActiveFilter[] = [];
+    if (incomeValue > 0) out.push({
+      key: "income",
+      label: `Income $${(incomeValue / 1000).toFixed(0)}k/yr`,
+      clear: () => { setIncomeValue(0); setFilters(f => ({ ...f, householdIncome: 0 })); },
+    });
+    if (amiCeiling > 0) out.push({
+      key: "ami", label: `≤${amiCeiling}% AMI`, clear: () => setAmiCeiling(0),
+    });
+    if (filters.bedroomSize) out.push({
+      key: "bed",
+      label: filters.bedroomSize === "0" ? "Studio" : `${filters.bedroomSize} bed`,
+      clear: () => setFilters(f => ({ ...f, bedroomSize: "" })),
+    });
+    if (filters.populationType) out.push({
+      key: "pop", label: filters.populationType, clear: () => setFilters(f => ({ ...f, populationType: "" })),
+    });
+    if (filters.voucherOnly) out.push({
+      key: "voucher", label: "Rental assistance only", clear: () => setFilters(f => ({ ...f, voucherOnly: false })),
+    });
+    if (filters.savedOnly) out.push({
+      key: "saved", label: "Saved only", clear: () => setFilters(f => ({ ...f, savedOnly: false })),
+    });
+    if (filters.yearBuiltMin != null) out.push({
+      key: "year", label: `Built ${filters.yearBuiltMin}+`, clear: () => setFilters(f => ({ ...f, yearBuiltMin: undefined })),
+    });
+    if (!showExpired && dataSource === "lihtc") out.push({
+      key: "expired", label: "Hiding expired affordability", clear: () => setShowExpired(true),
+    });
+    return out;
+  }, [incomeValue, amiCeiling, filters, showExpired, dataSource]);
+
+  const statusMessage = loading
+    ? t("status.loading", { defaultValue: "Searching public housing records…" })
+    : searchError
+      ? searchError
+      : hasSearched
+        ? t("status.found", { count: filtered.length })
+        : "";
 
   return (
-    <>
+    <ClickSpark sparkColor="#FFA94D" sparkSize={7} sparkRadius={16} sparkCount={7} duration={420}>
       {showSurvey && (
         <AmiSurvey onComplete={handleSurveyComplete} onSkip={handleSurveySkip} />
       )}
 
       {showAbout && <AboutModal onClose={() => setShowAbout(false)} />}
 
-      <div className="new-app-layout">
+      <div className="app-shell">
         <a href="#main-content" className="skip-link">
           {t("a11y.skipToResults", { defaultValue: "Skip to results" })}
         </a>
+
+        <div className="sr-only" role="status" aria-live="polite">{statusMessage}</div>
+
         <TopBar
           searchDisplay={searchLocation?.display_name}
           hasSearched={hasSearched}
@@ -694,7 +654,6 @@ export default function App() {
           onOpenAbout={() => setShowAbout(true)}
         />
 
-        {}
         {showMapView && hasSearched && (
           <div className="map-fullview">
             <Suspense fallback={<div className="map-loading" />}>
@@ -708,15 +667,26 @@ export default function App() {
                 onLocate={loc => setUserLocation(loc)}
               />
             </Suspense>
+            <p className="map-alt-note">
+              {t("a11y.mapListAlternative", {
+                count: filtered.length,
+                defaultValue: "All {{count}} properties on this map are also listed as text below.",
+              })}
+            </p>
           </div>
         )}
 
-        {}
         <div className={`content-area${selectedProperty ? " has-detail" : ""}`}>
-          {}
-          <main id="main-content" className="card-grid-area" tabIndex={-1}>
-            {!hasSearched && (
-              <WelcomeScreen
+          <main id="main-content" className="results has-fade" tabIndex={-1} aria-busy={loading}>
+            {hasSearched && (
+              <h1 className="sr-only">
+                {t("status.found", { count: filtered.length })}
+                {searchLocation ? ` — ${searchLocation.display_name}` : ""}
+              </h1>
+            )}
+
+            {!hasSearched && !loading && (
+              <Hero
                 onSearch={handleSearch}
                 onNearMe={handleNearMe}
                 loading={loading}
@@ -725,22 +695,35 @@ export default function App() {
               />
             )}
 
-            {hasSearched && loading && (
-              <div className="loading-grid">
+            {loading && (
+              <div className="loading-grid" aria-hidden="true">
                 {Array.from({ length: 9 }).map((_, i) => (
-                  <div key={i} className="skeleton-card">
-                    <div className="skeleton-hero" />
-                    <div className="skeleton-body">
-                      <div className="skeleton-line" />
-                      <div className="skeleton-line short" />
-                      <div className="skeleton-btns" />
-                    </div>
+                  <div key={i} className="skeleton-card" style={{ animationDelay: `${i * 60}ms` }}>
+                    <div className="skeleton-line w-30" />
+                    <div className="skeleton-line w-80 tall" />
+                    <div className="skeleton-line w-60" />
+                    <div className="skeleton-figures" />
+                    <div className="skeleton-line w-40" />
                   </div>
                 ))}
               </div>
             )}
 
-            {hasSearched && !loading && (
+            {hasSearched && !loading && searchError && (
+              <div className="results-error" role="alert">
+                <h2 className="results-error-head">{t("search.failedHead", { defaultValue: "That search didn't go through" })}</h2>
+                <p className="results-error-body">{searchError}</p>
+                <button
+                  className="empty-reset-btn"
+                  onClick={() => { if (searchQuery) handleSearch(searchQuery); else handleNearMe(); }}
+                  type="button"
+                >
+                  {t("search.retry", { defaultValue: "Try again" })}
+                </button>
+              </div>
+            )}
+
+            {hasSearched && !loading && !searchError && (
               <DeadlineWidget
                 properties={rawData}
                 deadlines={deadlines}
@@ -748,88 +731,103 @@ export default function App() {
               />
             )}
 
-            {hasSearched && !loading && (() => {
+            {hasSearched && !loading && !searchError && (() => {
               const savedCount = rawData.filter(p => favorites.has(p.id)).length;
               const trackingCount = rawData.filter(p => appStatuses[p.id]).length;
               if (savedCount === 0 && trackingCount === 0) return null;
               return (
-                <div className="results-filter-bar">
+                <div className="results-bar">
                   {savedCount > 0 && (
                     <button
-                      className={`results-filter-chip${filters.savedOnly ? " active" : ""}`}
+                      className={`results-chip${filters.savedOnly ? " active" : ""}`}
                       onClick={() => setFilters(f => ({ ...f, savedOnly: !f.savedOnly }))}
+                      aria-pressed={filters.savedOnly}
                       type="button"
                     >
                       {t("results.saved", { count: savedCount })}
                     </button>
                   )}
                   {trackingCount > 0 && (
-                    <button
-                      className={`results-filter-chip${filters.savedOnly ? "" : ""}`}
-                      onClick={() => setFilters(f => ({ ...f, savedOnly: false }))}
-                      type="button"
-                      style={{ opacity: 0.7 }}
-                    >
-                      {t("results.tracking", { count: trackingCount })}
-                    </button>
-                  )}
-                  {(filters.savedOnly) && (
-                    <button
-                      className="results-filter-clear"
-                      onClick={() => setFilters(f => ({ ...f, savedOnly: false }))}
-                      type="button"
-                    >
-                      Show all
-                    </button>
+                    <span className="results-note tnum">{t("results.tracking", { count: trackingCount })}</span>
                   )}
                   {savedCount > 0 && (
-                    <button
-                      className="results-filter-clear"
-                      onClick={exportFavorites}
-                      type="button"
-                    >
-                      Export saved
+                    <button className="results-link" onClick={exportFavorites} type="button">
+                      {t("results.export", { defaultValue: "Export saved" })}
                     </button>
                   )}
                 </div>
               );
             })()}
 
-            {hasSearched && !loading && filtered.length === 0 && (
-              <EmptyState onReset={() => { setIncomeValue(0); setAmiCeiling(0); setFilters(DEFAULT_FILTERS); }} />
+            {hasSearched && !loading && !searchError && filtered.length === 0 && (
+              <EmptyState
+                active={activeFilters}
+                totalBeforeFilters={rawData.length}
+                onReset={() => { setIncomeValue(0); setAmiCeiling(0); setShowExpired(false); setFilters(DEFAULT_FILTERS); }}
+              />
             )}
 
-            {hasSearched && !loading && filtered.length > 0 && (
+            {hasSearched && !loading && !searchError && filtered.length > 0 && (
               <div className="prop-grid">
-                {visible.map(p => (
-                  <PropertyCard
+                {visible.map((p, i) => (
+                  <AnimatedContent
                     key={p.id}
-                    property={p}
-                    userLocation={userLocation}
-                    saved={favorites.has(p.id)}
-                    appStatus={appStatuses[p.id]}
-                    onSelect={setSelectedProperty}
-                    onSave={toggleFavorite}
-                    onStatusChange={handleStatusChange}
-                    comparing={compareIds.has(p.id)}
-                    onToggleCompare={toggleCompare}
-                  />
+                    distance={reduced ? 0 : 34}
+                    duration={0.55}
+                    ease="power3.out"
+                    delay={Math.min(i, 11) * 0.035}
+                    initialOpacity={reduced ? 1 : 0}
+                    threshold={0.05}
+                  >
+                    <PropertyCard
+                      property={p}
+                      userLocation={userLocation}
+                      ami={ami}
+                      userIncome={incomeValue}
+                      hhSize={hhSize}
+                      saved={favorites.has(p.id)}
+                      appStatus={appStatuses[p.id]}
+                      onSelect={setSelectedProperty}
+                      onSave={toggleFavorite}
+                      onStatusChange={handleStatusChange}
+                      comparing={compareIds.has(p.id)}
+                      onToggleCompare={toggleCompare}
+                    />
+                  </AnimatedContent>
                 ))}
               </div>
             )}
 
             {hasSearched && !loading && visibleCount < filtered.length && (
-              <div ref={sentinelRef} className="results-more" aria-live="polite">
-                {t("results.showing", {
-                  shown: visibleCount,
-                  total: filtered.length,
-                  defaultValue: "Showing {{shown}} of {{total}}",
-                })}
+              <div className="results-more">
+                <button
+                  className="results-more-btn"
+                  onClick={() => sentinelRef.current?.scrollIntoView({ block: "nearest" })}
+                  type="button"
+                >
+                  {t("results.showing", {
+                    shown: visibleCount,
+                    total: filtered.length,
+                    defaultValue: "Showing {{shown}} of {{total}} — load more",
+                  })}
+                </button>
+                <div ref={sentinelRef} aria-hidden="true" />
               </div>
+            )}
+            {hasSearched && !loading && !reduced && (
+              <GradualBlur
+                target="parent"
+                position="bottom"
+                height="5rem"
+                strength={1.6}
+                divCount={5}
+                curve="bezier"
+                exponential
+                opacity={0.85}
+              />
             )}
           </main>
 
-          {}
           {selectedProperty && (
             <DetailPanel
               property={selectedProperty}
@@ -848,7 +846,6 @@ export default function App() {
           )}
         </div>
 
-        {}
         {compareIds.size >= 2 && (
           <ComparePanel
             properties={rawData.filter(p => compareIds.has(p.id))}
@@ -864,6 +861,6 @@ export default function App() {
           />
         )}
       </div>
-    </>
+    </ClickSpark>
   );
 }

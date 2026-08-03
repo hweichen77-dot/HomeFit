@@ -3,7 +3,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useRef } from "react";
 import type { HousingCollection } from "../types/housing";
 
-const TILE_STYLE = "https://tiles.openfreemap.org/styles/liberty";
+const TILE_STYLE = "https://tiles.openfreemap.org/styles/dark";
 const SOURCE_ID = "housing-simple";
 
 interface SimpleMapProps {
@@ -43,7 +43,7 @@ export function SimpleMap({ lat, lng, data }: SimpleMapProps) {
         source: SOURCE_ID,
         paint: {
           "circle-radius": 22,
-          "circle-color": "oklch(60% 0.17 145)",
+          "circle-color": "#5CE1A6",
           "circle-opacity": 0.18,
           "circle-stroke-width": 0,
         },
@@ -55,9 +55,9 @@ export function SimpleMap({ lat, lng, data }: SimpleMapProps) {
         source: SOURCE_ID,
         paint: {
           "circle-radius": 10,
-          "circle-color": "oklch(60% 0.17 145)",
+          "circle-color": "#5CE1A6",
           "circle-stroke-width": 3,
-          "circle-stroke-color": "#fff",
+          "circle-stroke-color": "#05070B",
           "circle-opacity": 1,
         },
       });

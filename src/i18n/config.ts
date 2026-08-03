@@ -15,4 +15,8 @@ i18n.use(initReactI18next).init({
   interpolation: { escapeValue: false },
 });
 
+const syncLang = (lng: string) => { document.documentElement.lang = lng.slice(0, 2); };
+syncLang(i18n.language ?? 'en');
+i18n.on('languageChanged', syncLang);
+
 export default i18n;

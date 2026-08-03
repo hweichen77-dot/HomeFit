@@ -8,6 +8,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null;
     const handleKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", handleKey);
 
@@ -32,6 +33,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
       return () => {
         window.removeEventListener("keydown", handleKey);
         document.removeEventListener("keydown", trap);
+        if (opener?.isConnected) opener.focus();
       };
     }
     return () => window.removeEventListener("keydown", handleKey);
