@@ -58,7 +58,7 @@ function popLabel(p: DisplayProperty): string {
 function amiTierName(pct: number): string {
   if (pct <= 30)  return "Extremely Low Income (ELI)";
   if (pct <= 50)  return "Very Low Income (VLI)";
-  if (pct <= 60)  return "Low Income – 60% AMI (LIHTC standard)";
+  if (pct <= 60)  return "Low Income, 60% AMI (LIHTC standard)";
   if (pct <= 80)  return "Low Income (LI)";
   if (pct <= 120) return "Moderate Income";
   return "Market Rate";
@@ -72,16 +72,16 @@ async function openExternal(url: string) {
 const AMI_TIER_GUIDE = [
   { pct: 30,  label: "≤30% AMI", name: "Extremely Low Income",      programs: "Emergency vouchers, public housing, HUD VASH" },
   { pct: 50,  label: "≤50% AMI", name: "Very Low Income",           programs: "Section 8, Housing Choice Vouchers, most HUD programs" },
-  { pct: 60,  label: "≤60% AMI", name: "Low Income (LIHTC standard)", programs: "Most LIHTC affordable apartments — the most common type" },
+  { pct: 60,  label: "≤60% AMI", name: "Low Income (LIHTC standard)", programs: "Most LIHTC affordable apartments, the most common type" },
   { pct: 80,  label: "≤80% AMI", name: "Low Income",                programs: "Workforce housing, HOME program, city/county programs" },
   { pct: 120, label: "≤120% AMI", name: "Moderate Income",          programs: "Some city/county programs, inclusionary units" },
 ];
 
 const APPLICATION_DOCS = [
   "Government-issued photo ID (driver's license, passport, or state ID)",
-  "Pay stubs from the last 2–3 months, or last 2 years of tax returns if self-employed",
+  "Pay stubs from the last 2-3 months, or last 2 years of tax returns if self-employed",
   "Social Security numbers for all household members",
-  "Bank statements from the last 2–3 months",
+  "Bank statements from the last 2-3 months",
   "Documentation of other income (Social Security, disability, child support, alimony)",
   "Prior landlord references or rental history (last 2 addresses)",
   "Birth certificates for any children in the household",
@@ -214,7 +214,7 @@ export function DetailPanel({
           </p>
           {ceilPct !== undefined && (
             <p className="detail-tier-ami">
-              {amiTierName(ceilPct)} — household income must stay under{" "}
+              {amiTierName(ceilPct)}. Household income must stay under{" "}
               <strong>{ceilPct}% of the Area Median Income (AMI)</strong>
               {incomeLimit && <> · up to {fmt(incomeLimit)}/yr for {userHhSize}-person household</>}
             </p>
@@ -253,7 +253,7 @@ export function DetailPanel({
             <div className="detail-ami-explainer">
               <span className="detail-ami-explainer-icon">ℹ</span>
               <span>
-                <strong>AMI = Area Median Income</strong> — the midpoint household income for your metro,
+                <strong>AMI = Area Median Income</strong>, the midpoint household income for your metro,
                 set annually by HUD. To qualify, your household's gross annual income must be below{" "}
                 {ceilPct ?? 60}% of the local AMI.
                 {userIncome === 0 && " Set your income in the filter bar to see if you qualify."}
@@ -307,7 +307,7 @@ export function DetailPanel({
                     </div>
                   ))}
                   <div className="detail-rent-note">
-                    Rents are HUD formula maximums — actual rents are set by the property at or below these amounts.
+                    Rents are HUD formula maximums. The property sets actual rents at or below these amounts.
                     Utilities may be billed separately.
                   </div>
                 </>
@@ -437,7 +437,7 @@ export function DetailPanel({
           <div className="detail-section-title">How to Apply</div>
           <p className="detail-apply-intro">
             {p.source === "lihtc"
-              ? "LIHTC properties often have waitlists. Apply as early as possible — units open when tenants move out. Waitlists can be months to years long."
+              ? "LIHTC properties often have waitlists. Apply as early as possible, since units only open when tenants move out. Waitlists can be months to years long."
               : "Contact the property directly to ask about open units and application status."}
           </p>
           <div className="detail-checklist">
@@ -450,9 +450,8 @@ export function DetailPanel({
             ))}
           </div>
           <p className="detail-apply-tip">
-            Tip: Apply to multiple properties simultaneously. Income must be re-verified annually —
-            if your income rises above the limit, you typically can stay but won't be eligible on renewal
-            at some properties.
+            Tip: Apply to multiple properties at once. Income is re-verified every year. If your income
+            rises above the limit, you can usually stay, but some properties will not renew you.
           </p>
         </div>
 

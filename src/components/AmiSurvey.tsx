@@ -26,11 +26,11 @@ const HH_SIZES = [1, 2, 3, 4, 5, 6, 7, 8];
 
 const INCOME_PRESETS = [
   { label: "Under $20k",  value: 18000 },
-  { label: "$20–30k",     value: 25000 },
-  { label: "$30–50k",     value: 40000 },
-  { label: "$50–70k",     value: 60000 },
-  { label: "$70–100k",    value: 85000 },
-  { label: "$100–150k",   value: 125000 },
+  { label: "$20-30k",     value: 25000 },
+  { label: "$30-50k",     value: 40000 },
+  { label: "$50-70k",     value: 60000 },
+  { label: "$70-100k",    value: 85000 },
+  { label: "$100-150k",   value: 125000 },
   { label: "Over $150k",  value: 160000 },
 ];
 
@@ -59,7 +59,7 @@ const TIER_PROGRAMS: Record<string, { programs: string[]; tip: string }> = {
       "Permanent Supportive Housing",
       "Section 8 / Housing Choice Voucher (priority)",
     ],
-    tip: "You're in the highest-priority income bracket. Seek a housing counselor — you may qualify for direct rental assistance.",
+    tip: "You're in the highest-priority income bracket. Seek a housing counselor, who can tell you if you qualify for direct rental assistance.",
   },
   VLI: {
     programs: [
@@ -69,7 +69,7 @@ const TIER_PROGRAMS: Record<string, { programs: string[]; tip: string }> = {
       "HUD-assisted multifamily",
       "Most city affordable housing programs",
     ],
-    tip: "Most LIHTC affordable housing is available to you. Apply to multiple properties — waitlists can be long.",
+    tip: "Most LIHTC affordable housing is available to you. Apply to multiple properties, since waitlists can be long.",
   },
   LI: {
     programs: [
@@ -83,7 +83,7 @@ const TIER_PROGRAMS: Record<string, { programs: string[]; tip: string }> = {
   },
   Moderate: {
     programs: [
-      "LIHTC 80–120% AMI units (less common)",
+      "LIHTC 80-120% AMI units (less common)",
       "City moderate-income programs",
       "Inclusionary affordable units",
       "Below-market-rate (BMR) programs",
@@ -181,7 +181,7 @@ export function AmiSurvey({ onComplete, onSkip }: AmiSurveyProps) {
             <div className="survey-ami-callout">
               <div className="survey-ami-callout-title">How affordable housing eligibility works</div>
               <p>
-                Every affordable housing program sets an income limit based on <strong>AMI — Area Median Income</strong>,
+                Every affordable housing program sets an income limit based on <strong>AMI, or Area Median Income</strong>,
                 which is the midpoint household income for your metro area, published annually by HUD.
                 If the median income in your area is $100,000 for a family of 4:
               </p>
@@ -208,7 +208,7 @@ export function AmiSurvey({ onComplete, onSkip }: AmiSurveyProps) {
                 </div>
               </div>
               <p className="survey-ami-note-small">
-                Limits adjust for household size — a family of 6 can earn more than a single person at the same % AMI.
+                Limits adjust for household size, so a family of 6 can earn more than a single person at the same % AMI.
                 Your actual dollar limit depends on your specific metro.
               </p>
             </div>

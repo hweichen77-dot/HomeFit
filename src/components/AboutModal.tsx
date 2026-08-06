@@ -63,7 +63,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
 
         <div className="modal-body">
           <section className="about-section">
-            <h3>The Problem</h3>
+            <h3>The problem</h3>
             <ul className="about-list">
               <li>Over <strong>40 million Americans</strong> pay more than they can afford for rent</li>
               <li>National median rent rose <strong>30%+ since 2020</strong></li>
@@ -73,16 +73,16 @@ export function AboutModal({ onClose }: AboutModalProps) {
           </section>
 
           <section className="about-section">
-            <h3>What This App Does</h3>
+            <h3>What this app does</h3>
             <p>Search <strong>50,000+ federally funded affordable housing properties</strong> across all 50 states. Filter by income level, bedroom size, and household type. Get HUD-regulated rent estimates for every unit type.</p>
             <ul className="about-list">
-              <li><strong>San Jose, CA:</strong> Detailed local data from City of San Jose GeoHub</li>
-              <li><strong>All other cities:</strong> HUD Low-Income Housing Tax Credit (LIHTC) 2024 database</li>
+              <li>Detailed local data from City of San Jose GeoHub for San Jose, CA</li>
+              <li>HUD Low-Income Housing Tax Credit (LIHTC) 2024 database for every other city</li>
             </ul>
           </section>
 
           <section className="about-section">
-            <h3>Understanding Income Limits (AMI)</h3>
+            <h3>Understanding income limits (AMI)</h3>
             <p><strong>Area Median Income (AMI)</strong> is the midpoint household income for your metro area, set annually by HUD. Affordable housing programs use AMI to determine eligibility and rent.</p>
             <div className="ami-legend">
               <div className="ami-row">
@@ -106,12 +106,12 @@ export function AboutModal({ onClose }: AboutModalProps) {
           </section>
 
           <section className="about-section">
-            <h3>How to Apply</h3>
+            <h3>How to apply</h3>
             <ol className="about-list">
               <li>Search your city and use the income calculator to find programs you qualify for</li>
               <li>Contact properties directly about open waitlists, and apply to several at once</li>
               <li>Gather documents: photo ID, Social Security cards, proof of income, bank statements, rental history</li>
-              <li>Submit and follow up periodically. Waitlists move faster than expected</li>
+              <li>Submit and follow up every few months, since most waitlists move slowly</li>
               <li>Use the status buttons on each property (Interested / Applied / Waitlisted) to track where you are</li>
             </ol>
             <p className="about-note">
@@ -126,7 +126,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
           </section>
 
           <section className="about-section">
-            <h3>Data Sources</h3>
+            <h3>Data sources</h3>
             <ul className="about-list">
               <li>
                 <a className="about-link" href="https://data.sanjoseca.gov" target="_blank" rel="noopener noreferrer">City of San Jose GeoHub</a>
@@ -148,7 +148,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
           </section>
 
           <section className="about-section">
-            <h3>Keyboard Shortcuts</h3>
+            <h3>Keyboard shortcuts</h3>
             <div className="shortcut-grid">
               <kbd>/</kbd><span>Focus search</span>
               <kbd>?</kbd><span>Open this guide</span>

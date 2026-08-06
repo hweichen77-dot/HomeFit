@@ -10,24 +10,22 @@
 
 ![Home screen: search by city, ZIP, or current location with household and income filters](docs/screenshots/welcome.png)
 
-**Built-in eligibility guide: understand AMI income limits before you search.**
+**A built-in eligibility guide explains AMI income limits before you search.**
 
 ![Eligibility survey explaining how Area Median Income determines which programs you qualify for](docs/screenshots/eligibility.png)
 
 ---
 
-## The Problem
+## The problem
 
-Over **40 million Americans** pay more than they can afford for rent. Median rents have risen 30%+ since 2020. Finding eligible affordable housing programs is confusing, fragmented, and inaccessible to the people who need it most.
-
-This app changes that.
+Over **40 million Americans** pay more than they can afford for rent, and median rents have risen 30%+ since 2020. The programs that could help are spread across dozens of federal, state, and city agencies, each with its own eligibility rules and its own website. HomeFit puts them in one searchable place.
 
 ---
 
 ## Features
 
 - **Nationwide coverage**: search any city or ZIP across all 50 states using the HUD LIHTC database (50,000+ properties)
-- **Enhanced local data**: supplemental housing inventory from city/county open data portals (currently includes San Jose GeoHub)
+- **Extra local data**: additional housing inventory from city and county open data portals (currently San Jose GeoHub)
 - **Income eligibility calculator**: enter your household income and size to see which programs you qualify for based on HUD Area Median Income (AMI) limits
 - **Accurate rent estimates**: HUD-regulated maximum rents per bedroom type and AMI tier
 - **My Applications tracker**: mark properties as Interested, Applied, or Waitlisted; persists across sessions
@@ -41,7 +39,7 @@ This app changes that.
 
 ---
 
-## Data Sources
+## Data sources
 
 | Source | Coverage | Updated |
 |--------|----------|---------|
@@ -52,7 +50,7 @@ This app changes that.
 
 ---
 
-## Technical Stack
+## Technical stack
 
 - **Frontend**: React 18 + TypeScript + Vite
 - **Backend**: Rust (Tauri v2), handles API fetching, geocoding, and data pagination
@@ -61,7 +59,7 @@ This app changes that.
 
 ---
 
-## How AMI and Rent Work
+## How AMI and rent work
 
 The **Area Median Income (AMI)** is the midpoint household income for a metro area, set annually by HUD. Affordable housing programs cap rents at **30% of the income limit** for each tier:
 
@@ -83,7 +81,7 @@ Prebuilt installers (no toolchain required) are on the
 
 ---
 
-## Building from Source
+## Building from source
 
 ```bash
 # Prerequisites: Node.js 18+, Rust 1.75+

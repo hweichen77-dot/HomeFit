@@ -375,7 +375,7 @@ export default function App() {
       ].filter(Boolean);
       return parts.join("\n");
     });
-    const header = `HomeFit — Saved Properties (${saved.length})\n${"=".repeat(48)}\n\n`;
+    const header = `HomeFit, Saved Properties (${saved.length})\n${"=".repeat(48)}\n\n`;
     const blob = new Blob([header + lines.join("\n\n" + "-".repeat(32) + "\n\n")], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -681,7 +681,7 @@ export default function App() {
             {hasSearched && (
               <h1 className="sr-only">
                 {t("status.found", { count: filtered.length })}
-                {searchLocation ? ` — ${searchLocation.display_name}` : ""}
+                {searchLocation ? ` · ${searchLocation.display_name}` : ""}
               </h1>
             )}
 
@@ -808,7 +808,7 @@ export default function App() {
                   {t("results.showing", {
                     shown: visibleCount,
                     total: filtered.length,
-                    defaultValue: "Showing {{shown}} of {{total}} — load more",
+                    defaultValue: "Showing {{shown}} of {{total}}, load more",
                   })}
                 </button>
                 <div ref={sentinelRef} aria-hidden="true" />

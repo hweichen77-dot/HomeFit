@@ -29,17 +29,17 @@ const TIER_INFO: Record<AmiTier, { label: string; description: string; color: st
     color: "var(--tier-eli)",
   },
   VLI: {
-    label: "Very Low Income (31–50% AMI)",
+    label: "Very Low Income (31-50% AMI)",
     description: "You qualify for most HUD programs including Section 8 / Housing Choice Vouchers and LIHTC properties.",
     color: "var(--tier-vli)",
   },
   LI: {
-    label: "Low Income (51–80% AMI)",
+    label: "Low Income (51-80% AMI)",
     description: "You qualify for LIHTC affordable housing and most city/county affordable programs.",
     color: "var(--tier-li)",
   },
   Moderate: {
-    label: "Moderate Income (81–120% AMI)",
+    label: "Moderate Income (81-120% AMI)",
     description: "You may qualify for moderate-income affordable housing. Some properties accept up to 120% AMI.",
     color: "var(--tier-mod)",
   },
